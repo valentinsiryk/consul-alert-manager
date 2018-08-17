@@ -1,0 +1,11 @@
+[Unit]
+Description=consul alert-manager
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Restart=on-failure
+ExecStart=/usr/local/bin/consul-alert-manager --smtp-reciever example@example.com --smtp-host localhost
+
+[Install]
+WantedBy=multi-user.target
