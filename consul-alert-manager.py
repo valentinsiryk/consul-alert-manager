@@ -32,6 +32,7 @@ def get_args():
     parser.add_argument('--log-file', nargs='?', default=log_file, metavar='value', help='path to log file', dest='log_file') 
     parser.add_argument('--smtp-host', nargs='?', default=smtp_host, metavar='value', help='SMTP host', dest='smtp_host')               
     parser.add_argument('--smtp-reciever', nargs='?', default=smtp_reciever, metavar='value', help='SMTP email receiver', dest='smtp_reciever')
+    parser.add_argument('--smtp-sender', nargs='?', default=smtp_sender, metavar='value', help='SMTP email sender', dest='smtp_sender')
     
     return parser.parse_args()
 
@@ -57,7 +58,7 @@ def send_email(header, dc, node, service, check_id, state, output):
         msg = EmailMessage()
         content = "DC: {0}\nNode: {1}\nService: {2}\nCheckID: {3}\n\nOutput:\n{4}".format(dc, node, service, check_id, output)
         msg.set_content(content)
-        msg['Subject'] = "{0}: {1} is {2}".format(header, check_id, state)
+        msg['Subject'] = "{0}: {2}: {1}".format(header, check_id, state)
         msg['From'] = smtp_sender
         msg['To'] = smtp_reciever
 
@@ -140,7 +141,8 @@ if __name__ == '__main__':
         smtp_host = args.smtp_host
     if args.smtp_reciever is not None:
         smtp_reciever = args.smtp_reciever
-
+    if args.smtp_sender is not None:
+        smtp_sender = args.smtp_sender
 
     log('[OK] Consul Alert Manager is started')
 
