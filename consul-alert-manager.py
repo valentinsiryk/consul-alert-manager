@@ -86,6 +86,14 @@ def is_check_resolved(dc, node, check_id, target_state):
 
     return False
 
+def is_check_present(dc, node, check_id):
+    _, services = c.health.node(node, dc=dc)
+    for n in services:
+        if (n['CheckID'] == check_id):
+            return True
+
+    return False
+
 
 def handle_saved_states(saved_states):
     for state in saved_states:
@@ -96,7 +104,12 @@ def handle_saved_states(saved_states):
                 dc, node, check_id = data[2], data[3], data[4]
 
                 target_state = 'passing'
-
+                
+                if not is_check_present(dc, node, check_id):
+                    log('[INFO] Previously saved checkid ' + check_id + ' is absent')
+                    delete_key(k)
+                    continue
+                    
                 if is_check_resolved(dc, node, check_id, target_state):
                     service, output = '', ''
                     if (len(data) > 5):
